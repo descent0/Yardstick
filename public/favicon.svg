@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Background circle -->
+  <circle cx="16" cy="16" r="15" fill="#2563eb" stroke="#1d4ed8" stroke-width="2"/>
+  
+  <!-- Dollar sign -->
+  <path d="M16 6v2M16 24v2" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+  <path d="M12 10c0-2.2 1.8-4 4-4s4 1.8 4 4-1.8 4-4 4h-2c-1.1 0-2 .9-2 2s.9 2 2 2h4c2.2 0 4 1.8 4 4s-1.8 4-4 4-4-1.8-4-4" 
+        stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  
+  <!-- Chart bars (simplified) -->
+  <rect x="22" y="18" width="2" height="6" fill="#10b981" opacity="0.8"/>
+  <rect x="25" y="15" width="2" height="9" fill="#10b981" opacity="0.8"/>
+  <rect x="28" y="20" width="2" height="4" fill="#10b981" opacity="0.8"/>
+</svg>
