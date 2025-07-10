@@ -248,7 +248,7 @@ export default function Dashboard() {
                 {/* Category Breakdown */}
                 {Object.keys(categoryBreakdown).length > 0 && (
                   <div className="flex flex-col gap-4">
-                    <h2 className="text-xl font-bold">This Month's Category Breakdown</h2>
+                    <h2 className="text-xl font-bold">This Month&apos;s Category Breakdown</h2>
                     <div className="flex flex-wrap gap-4">
                       {Object.values(categoryBreakdown)
                         .sort((a, b) => b.total - a.total)
