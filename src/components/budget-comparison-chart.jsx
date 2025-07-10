@@ -98,7 +98,7 @@ export default function BudgetComparisonChart({ transactions, budgets }) {
           <div className="text-center">
             <Target className="h-12 w-12 text-[var(--muted-foreground)] mx-auto mb-4" />
             <p className="text-[var(--muted-foreground)] font-medium">No budgets set for this month</p>
-            <p className="text-sm text-[var(--muted-foreground)] mt-1">Set your first budget to see comparisons</p>
+            <p className="text-sm text-[var(--muted-foreground)] mt-1">{"Don’t forget to check your budget"}</p>
           </div>
         </div>
       </div>
