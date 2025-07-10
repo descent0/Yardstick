@@ -15,26 +15,25 @@ export async function GET() {
 
 export async function POST(request) {
   try {
-    const { amount, date, description } = await request.json();
+    const { amount, date, description, category } = await request.json();
 
-    if (!amount || !date || !description || isNaN(amount)) {
+    if (!amount || !date || !description || !category || isNaN(amount)) {
       return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
     }
 
     await dbConnect();
-    const transaction = await Transaction.create({ amount, date, description });
+    const transaction = await Transaction.create({ amount, date, description: description.trim(), category });
 
     return NextResponse.json({ id: transaction._id, message: 'Transaction created successfully' });
   } catch (error) {
     return NextResponse.json({ error: 'Failed to create transaction' }, { status: 500 });
   }
 }
-
 export async function PUT(request) {
   try {
-    const { id, amount, date, description } = await request.json();
+    const { id, amount, date, description, category } = await request.json();
 
-    if (!id || !amount || !date || !description || isNaN(amount)) {
+    if (!id || !amount || !date || !description || !category || isNaN(amount)) {
       return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
     }
 
@@ -45,6 +44,7 @@ export async function PUT(request) {
         amount,
         date,
         description: description.trim(),
+        category,
         updatedAt: new Date(),
       },
       { new: true }

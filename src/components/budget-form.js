@@ -4,21 +4,19 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Loader2 } from "lucide-react"
 import { CATEGORIES } from "@/lib/categories"
 
-export default function TransactionForm({ transaction, onSuccess, onCancel }) {
+export default function BudgetForm({ onSuccess, onCancel }) {
+  const currentDate = new Date()
   const [formData, setFormData] = useState({
-    amount: transaction?.amount || "",
-    date: transaction?.date
-      ? new Date(transaction.date).toISOString().split("T")[0]
-      : new Date().toISOString().split("T")[0],
-    description: transaction?.description || "",
-    category: transaction?.category || "",
+    category: "",
+    amount: "",
+    month: currentDate.getMonth() + 1,
+    year: currentDate.getFullYear(),
   })
   const [errors, setErrors] = useState({})
   const [isLoading, setIsLoading] = useState(false)
@@ -27,24 +25,16 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }) {
   const validateForm = () => {
     const newErrors = {}
 
+    if (!formData.category) {
+      newErrors.category = "Category is required"
+    }
+
     if (!formData.amount) {
       newErrors.amount = "Amount is required"
     } else if (isNaN(Number.parseFloat(formData.amount))) {
       newErrors.amount = "Amount must be a valid number"
     } else if (Number.parseFloat(formData.amount) <= 0) {
       newErrors.amount = "Amount must be greater than 0"
-    }
-
-    if (!formData.date) {
-      newErrors.date = "Date is required"
-    }
-
-    if (!formData.description.trim()) {
-      newErrors.description = "Description is required"
-    }
-
-    if (!formData.category) {
-      newErrors.category = "Category is required"
     }
 
     setErrors(newErrors)
@@ -62,15 +52,12 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }) {
     setIsLoading(true)
 
     try {
-      const method = transaction ? "PUT" : "POST"
-      const body = transaction ? { ...formData, id: transaction._id } : formData
-
-      const response = await fetch("/api/transactions", {
-        method,
+      const response = await fetch("/api/budgets", {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(body),
+        body: JSON.stringify(formData),
       })
 
       const data = await response.json()
@@ -94,39 +81,30 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }) {
     }
   }
 
+  const months = [
+    { value: 1, label: "January" },
+    { value: 2, label: "February" },
+    { value: 3, label: "March" },
+    { value: 4, label: "April" },
+    { value: 5, label: "May" },
+    { value: 6, label: "June" },
+    { value: 7, label: "July" },
+    { value: 8, label: "August" },
+    { value: 9, label: "September" },
+    { value: 10, label: "October" },
+    { value: 11, label: "November" },
+    { value: 12, label: "December" },
+  ]
+
+  const years = Array.from({ length: 5 }, (_, i) => currentDate.getFullYear() + i)
+
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader>
-        <CardTitle>{transaction ? "Edit Transaction" : "Add New Transaction"}</CardTitle>
+        <CardTitle>Set Budget</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="amount">Amount ($)</Label>
-            <Input
-              id="amount"
-              type="number"
-              step="0.01"
-              placeholder="0.00"
-              value={formData.amount}
-              onChange={(e) => handleChange("amount", e.target.value)}
-              className={errors.amount ? "border-red-500" : ""}
-            />
-            {errors.amount && <p className="text-sm text-red-500">{errors.amount}</p>}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="date">Date</Label>
-            <Input
-              id="date"
-              type="date"
-              value={formData.date}
-              onChange={(e) => handleChange("date", e.target.value)}
-              className={errors.date ? "border-red-500" : ""}
-            />
-            {errors.date && <p className="text-sm text-red-500">{errors.date}</p>}
-          </div>
-
           <div className="space-y-2">
             <Label htmlFor="category">Category</Label>
             <Select value={formData.category} onValueChange={(value) => handleChange("category", value)}>
@@ -148,15 +126,57 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
-            <Textarea
-              id="description"
-              placeholder="Enter transaction description"
-              value={formData.description}
-              onChange={(e) => handleChange("description", e.target.value)}
-              className={errors.description ? "border-red-500" : ""}
+            <Label htmlFor="amount">Budget Amount ($)</Label>
+            <Input
+              id="amount"
+              type="number"
+              step="0.01"
+              placeholder="0.00"
+              value={formData.amount}
+              onChange={(e) => handleChange("amount", e.target.value)}
+              className={errors.amount ? "border-red-500" : ""}
             />
-            {errors.description && <p className="text-sm text-red-500">{errors.description}</p>}
+            {errors.amount && <p className="text-sm text-red-500">{errors.amount}</p>}
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="month">Month</Label>
+              <Select
+                value={formData.month.toString()}
+                onValueChange={(value) => handleChange("month", Number.parseInt(value))}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {months.map((month) => (
+                    <SelectItem key={month.value} value={month.value.toString()}>
+                      {month.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="year">Year</Label>
+              <Select
+                value={formData.year.toString()}
+                onValueChange={(value) => handleChange("year", Number.parseInt(value))}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {years.map((year) => (
+                    <SelectItem key={year} value={year.toString()}>
+                      {year}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           {submitError && (
@@ -168,7 +188,7 @@ export default function TransactionForm({ transaction, onSuccess, onCancel }) {
           <div className="flex gap-2 pt-4">
             <Button type="submit" disabled={isLoading} className="flex-1">
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {transaction ? "Update" : "Add"} Transaction
+              Set Budget
             </Button>
             {onCancel && (
               <Button type="button" variant="outline" onClick={onCancel}>
